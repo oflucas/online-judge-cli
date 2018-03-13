@@ -1,27 +1,48 @@
 import { Injectable } from '@angular/core';
 import { Problem } from "../models/problem.model";
-import { PROBLEMS } from "../mock-problems";
+import { Http, Response, Headers } from '@angular/http';
+import {Observable} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 // INjectable, can be used by others
 @Injectable()
 export class DataService {
 
-  problems: Problem[] = PROBLEMS; // init from PROBLEMS at first
+  private problemsSource = new BehaviorSubject<Problem[]>([]);
 
-  constructor() { }
+  constructor(private http: Http) { }
 
-  getProblems(): Problem[] {
-    return this.problems;
+  getProblems(): Observable<Problem[]> {
+    this.http.get("api/v1/problems")
+      .toPromise()
+      .then((res: Response) => {
+        this.problemsSource.next(res.json());
+      })
+      .catch(this.handleError);
+    return this.problemsSource.asObservable()
   }
 
-  getProblem(id: number): Problem {
-    return this.problems.find(
-      (problem) => problem.id == id
-    );
+  getProblem(id: number): Promise<Problem> {
+    return this.http.get(`api/v1/problems/${id}`)
+      .toPromise()
+      .then((res: Response) => res.json())
+      .catch(this.handleError);
   }
 
-  addProblem(problem: Problem): void {
-    problem.id = this.problems.length + 1;
-    this.problems.push(problem);
+  addProblem(problem: Problem): Promise<Problem> {
+    let headers = new Headers({'content-type': 'application/json'});
+    return this.http.post('/api/v1/problems', problem, headers)
+      .toPromise()
+      .then((res: Response) => {
+        this.getProblems(); //force front-end to refresh to get new problem
+        return res.json();
+      })
+      .catch(this.handleError);
+  }
+
+  // error handler
+  private handleError(error: any): Promise<any> {
+    console.error('An error occurred', error);
+    return Promise.reject(error.body || error);
   }
 }

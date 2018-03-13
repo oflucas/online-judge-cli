@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Problem } from "../../models/problem.model";
+import { Subscription } from 'rxjs/Subscription';
 
 // <*ngFor="let problem of problems">
 // ~= for problem in problems
@@ -12,7 +13,8 @@ import { Problem } from "../../models/problem.model";
   styleUrls: ['./problem-list.component.css']
 })
 export class ProblemListComponent implements OnInit {
-  problems: Problem[]; // member data
+  problems: Problem[] = []; // member data
+  subscriptionProblems: Subscription;
 
   constructor(@Inject("data") private data) { }
 
@@ -22,6 +24,7 @@ export class ProblemListComponent implements OnInit {
   }
 
   getProblems(): void {
-    this.problems = this.data.getProblems();
+    this.subscriptionProblems = this.data.getProblems()
+      .subscribe(problems => this.problems = problems);
   }
 }
