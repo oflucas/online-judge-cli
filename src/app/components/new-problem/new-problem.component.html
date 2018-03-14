@@ -8,7 +8,7 @@
     </div>
     <div class="form-group">
       <label for="problemDesc">Problem Description</label>
-      <textarea type="text" row="3" class="form-control" id="problemDesc" 
+      <textarea type="text" row="3" class="form-control" id="problemDesc"
       name="problemDesc" required placeholder="Enter Problem Description"
       [(ngModel)]="newProblem.desc"></textarea>
     </div>
@@ -17,6 +17,7 @@
       <select class="form-control" id="difficulty"
       name="difficulty"
       [(ngModel)]="newProblem.difficulty">
+        <option value="default_difficulty" disabled>Select difficulty</option>
         <option *ngFor="let difficulty of difficulties" [value]="difficulty">
           {{difficulty}}
         </option>
