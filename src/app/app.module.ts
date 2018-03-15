@@ -37,12 +37,10 @@ import { ProfileComponent } from './components/profile/profile.component';
   }, {
     provide: "auth",
     useClass: AuthService
-  },
-  AuthGuardService
-  // , {
-  //   provide: "authGuard",
-  //   useClass: AuthGuardService
-  // }
+  }, {
+    provide: "authGuard",
+    useClass: AuthGuardService
+  }
   ],
   bootstrap: [AppComponent]
 })
