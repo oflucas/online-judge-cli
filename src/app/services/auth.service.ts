@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import * as auth0 from 'auth0-js';
+import { Http, Response, Headers } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +18,10 @@ export class AuthService {
   });
   userProfile: any;
 
-  constructor(public router: Router) {}
+  constructor(
+    public router: Router,
+    private http: Http
+  ) {}
 
   public login(): void {
     this.auth0.authorize();
@@ -73,5 +78,33 @@ export class AuthService {
       }
       cb(err, profile);
     });
+  }
+
+  public resetPassword(): void {
+    let profile = this.userProfile;
+    let url: string = 'https://oflucas.auth0.com/dbconnections/change_password';
+    let headers = new Headers({ 'content-type': 'application/json' });
+    let body = {
+      client_id: '48gt3j38CPdc349IgkXbY9qaXML_74Qk',
+      email: profile.name,
+      connection: 'Username-Password-Authentication',
+      json: true
+    }
+
+    console.log(url);
+    console.log(headers);
+    console.log(body);
+
+    this.http.post(url, body, headers)
+      .toPromise()
+      .then((res: Response) => {
+        console.log(res.json());
+      })
+      .catch(this.handleError);
+  }
+
+  private handleError(error: any): Promise<any> {
+    console.error('Error occurred', error);
+    return Promise.reject(error.message || error);
   }
 }
