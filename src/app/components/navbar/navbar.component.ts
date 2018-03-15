@@ -12,23 +12,23 @@ export class NavbarComponent implements OnInit {
   username = "Guest";
 
   constructor(@Inject("auth") private auth) {
-    auth.handleAuthentication();
+    auth.handleAuthentication(err => {
+      // async, wait for handling auth and then process profile
+      if (err) { return; }
+      if (this.auth.isAuthenticated()) {
+        this.auth.getProfile((err, profile) => {
+          console.log(profile)
+          this.username = profile.nickname;
+        });
+      }
+    });
   }
 
   ngOnInit() {
-    if (this.auth.isAuthenticated()) {
-      this.auth.getProfile((err, profile) => {
-        this.username = profile.nickname;
-      });
-    }
   }
 
   login(): void {
     this.auth.login();
-    this.auth.getProfile((err, profile) => {
-      console.log(profile)
-      this.username = profile.nickname;
-    });
   }
 
   logout(): void {

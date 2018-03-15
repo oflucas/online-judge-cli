@@ -22,7 +22,7 @@ export class AuthService {
     this.auth0.authorize();
   }
 
-  public handleAuthentication(): void {
+  public handleAuthentication(cb): void {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         window.location.hash = '';
@@ -32,6 +32,7 @@ export class AuthService {
         this.router.navigate(['/']);
         console.log(err);
       }
+      cb(err);
     });
   }
 
