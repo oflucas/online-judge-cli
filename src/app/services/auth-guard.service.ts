@@ -22,17 +22,11 @@ export class AuthGuardService implements CanActivate {
   }
 
   isAdmin(): boolean {
-    // can not make it work
-    // if (this.auth.isAuthenticated()) {
-    //   this.auth.getProfile((err, profile) => {
-    //     if (profile && profile.name === 'admin@gmail.com') {
-    //       this.is_admin = true;
-    //     } else {
-    //       this.is_admin = false;
-    //     }
-    //   });
-    // }
-    // return this.is_admin;
-    return this.auth.isAuthenticated();
+    // can not get userProfile.roles, so hack here
+    if (this.auth.userProfile && this.auth.userProfile.name === 'admin@gmail.com') {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
