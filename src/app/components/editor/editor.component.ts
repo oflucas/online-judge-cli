@@ -16,6 +16,12 @@ export class EditorComponent implements OnInit {
   public languages: string[] = ['Java', 'C++', 'Python'];
   language: string = 'Java';
 
+  modeFile = {
+    'Java': 'java',
+    'C++': 'c_cpp',
+    'Python': 'python'
+  }
+
   // default solution content
   defaultContent = {
     'Java': `public class Solution {
@@ -53,7 +59,7 @@ int main() {
   }
 
   resetEditor(): void {
-    this.editor.getSession().setMode('ace/mode/' + this.language.toLowerCase());
+    this.editor.getSession().setMode('ace/mode/' + this.modeFile[this.language]);
     this.editor.setValue(this.defaultContent[this.language]);
   }
 
