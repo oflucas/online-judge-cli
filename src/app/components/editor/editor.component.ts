@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 // this component is a wrapper of ACE editor
 
+import {ActivatedRoute, Params} from '@angular/router';
+
 // need to declare ace as global variable
 declare var ace: any;
 
@@ -15,6 +17,8 @@ export class EditorComponent implements OnInit {
 
   public languages: string[] = ['Java', 'C++', 'Python'];
   language: string = 'Java';
+
+  sessionId: string;  // socket session/group id, server side needs this
 
   modeFile = {
     'Java': 'java',
@@ -42,16 +46,42 @@ int main() {
   `
   }
 
-  constructor(@Inject('collaboration') private collaboration) {
-  }
+  constructor(
+    @Inject('collaboration') private collaboration,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
+    this.route.params
+      .subscribe(params => {
+        // socket session/group id, server side needs this
+        this.sessionId = params['id']; // here, problem id is session id...
+        this.initEditor();
+      });
+  }
+
+  initEditor() {
     this.editor = ace.edit('editor');
     this.editor.setTheme('ace/theme/eclipse');
     this.resetEditor();
     this.editor.$blockScrolling = Infinity;
 
-    this.collaboration.init();
+    // put cursor
+    document.getElementsByTagName('textarea')[0].focus();
+
+    this.collaboration.init(this.editor, this.sessionId);
+
+    // editor's property, for receiving server's change of editor's content
+    this.editor.lastAppliedChange = null;
+
+    this.editor.on('change', (e) => {
+      // when I type on the editor in browser, this code will process the change
+      console.log('editor changes: ' + JSON.stringify(e));
+      if (this.editor.lastAppliedChange != e) {
+        // avoid 'glitches', only when my last change and current are different, send the change to others
+        this.collaboration.change(JSON.stringify(e));
+      }
+    });
   }
 
   setLanguage(language: string): void {
