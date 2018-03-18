@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 // this component is a wrapper of ACE editor
 
 // need to declare ace as global variable
@@ -42,7 +42,7 @@ int main() {
   `
   }
 
-  constructor() {
+  constructor(@Inject('collaboration') private collaboration) {
   }
 
   ngOnInit() {
@@ -50,6 +50,8 @@ int main() {
     this.editor.setTheme('ace/theme/eclipse');
     this.resetEditor();
     this.editor.$blockScrolling = Infinity;
+
+    this.collaboration.init();
   }
 
   setLanguage(language: string): void {
