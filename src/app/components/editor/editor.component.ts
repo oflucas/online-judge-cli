@@ -74,6 +74,7 @@ int main() {
     // editor's property, for receiving server's change of editor's content
     this.editor.lastAppliedChange = null;
 
+    // watch for code change
     this.editor.on('change', (e) => {
       // when I type on the editor in browser, this code will process the change
       console.log('editor changes: ' + JSON.stringify(e));
@@ -81,6 +82,13 @@ int main() {
         // avoid 'glitches', only when my last change and current are different, send the change to others
         this.collaboration.change(JSON.stringify(e));
       }
+    });
+
+    // watch for editor cursor change
+    this.editor.getSession().getSelection().on('changeCursor', () => {
+      let cursor = this.editor.getSession().getSelection().getCursor();
+      console.log('cursor moves: ' + JSON.stringify(cursor))
+      this.collaboration.cursorMove(JSON.stringify(cursor));
     });
   }
 
