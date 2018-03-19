@@ -90,6 +90,9 @@ int main() {
       console.log('cursor moves: ' + JSON.stringify(cursor))
       this.collaboration.cursorMove(JSON.stringify(cursor));
     });
+
+    // keep up the changes of other users
+    this.collaboration.restoreBuffer();
   }
 
   setLanguage(language: string): void {
