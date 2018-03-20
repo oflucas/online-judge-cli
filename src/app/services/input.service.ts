@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class InputService {
+  // this service enable communication between two components
 
   private inputSubject$ = new BehaviorSubject<string>('');
 
