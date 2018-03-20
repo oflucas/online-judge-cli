@@ -20,6 +20,8 @@ export class EditorComponent implements OnInit {
 
   sessionId: string;  // socket session/group id, server side needs this
 
+  output: string; // save run result
+
   modeFile = {
     'Java': 'java',
     'C++': 'c_cpp',
@@ -48,6 +50,7 @@ int main() {
 
   constructor(
     @Inject('collaboration') private collaboration,
+    @Inject('data') private data,
     private route: ActivatedRoute
   ) {}
 
@@ -104,10 +107,17 @@ int main() {
   resetEditor(): void {
     this.editor.getSession().setMode('ace/mode/' + this.modeFile[this.language]);
     this.editor.setValue(this.defaultContent[this.language]);
+    this.output = 'Execution result: ^~^';
   }
 
   submit(): void {
     let userCode = this.editor.getValue();
+    let data = {
+      user_code: userCode,
+      lang: this.language.toLowerCase()
+    }
+    this.data.buildAndRun(data)
+      .then(res => this.output = res.text);
     console.log(userCode);
   }
 }
