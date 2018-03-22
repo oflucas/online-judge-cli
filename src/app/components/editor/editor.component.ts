@@ -42,9 +42,7 @@ int main() {
   // wrtie your code here
   return 0;
 }`,
-    'Python': `class Solution:
-  def solution():
-    # write your code here
+    'Python': `# write your code here
   `
   }
 
